@@ -27,7 +27,7 @@ replay_pid*
 
 ### IntelliJ IDEA ###
 out/
-**/src/main/**/out/
+**/out/
 **/src/test/**/out/
 
 ### Eclipse ###
