@@ -89,8 +89,8 @@ public class DotParser {
            if(transition.from != null && transition.to != null){  automata.transitions.add(transition);}
 
        }
-
    }
+
 
    public  State getState(String name , Automata automata){
         for(State state : automata.states){
@@ -100,6 +100,8 @@ public class DotParser {
         }
         return null;
    }
+
+
 
     private void setIntialState(String line, Automata automata) {
 
@@ -115,6 +117,8 @@ public class DotParser {
         }
 
     }
+
+
 
 
     public Automata parseDotFile(String path) throws IOException {
