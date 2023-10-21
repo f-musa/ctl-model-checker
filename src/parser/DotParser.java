@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by  TETEREOU Aboudourazakou   on  10/21/2023
- * Project name ModelChecker
- */
+
 
 
 class  State{
@@ -72,7 +69,6 @@ public class DotParser {
             }
 
         }
-
         return  state;
     }
 
@@ -85,7 +81,6 @@ public class DotParser {
        while (matcher.find()) {
            states.add(matcher.group());
        }
-
        for (int i = 0; i < states.size() - 1; i++) {
            Transition transition = new Transition();
            transition.from = getState(states.get(i), automata);
@@ -94,8 +89,6 @@ public class DotParser {
            if(transition.from != null && transition.to != null){  automata.transitions.add(transition);}
 
        }
-
-
 
    }
 
@@ -155,7 +148,7 @@ public class DotParser {
 
         DotParser c = new DotParser();
         try {
-            c.parseDotFile("PathToDotFile");
+            c.parseDotFile("C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\automata.dot");
         }catch (IOException e){}
 
     }
