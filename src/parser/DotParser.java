@@ -155,7 +155,7 @@ public class DotParser {
 
         DotParser c = new DotParser();
         try {
-            c.parseDotFile("C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\automata.dot");
+            c.parseDotFile("PathToDotFile");
         }catch (IOException e){}
 
     }
