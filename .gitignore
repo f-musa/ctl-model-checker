@@ -29,6 +29,7 @@ replay_pid*
 out/
 **/out/
 **/src/test/**/out/
+.idea
 
 ### Eclipse ###
 .apt_generated
