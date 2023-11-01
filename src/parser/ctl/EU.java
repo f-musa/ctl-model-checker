@@ -14,6 +14,10 @@ public class EU extends Formula {
     public void setOuterFormula(Formula outerFormula) {
         this.outerFormula = outerFormula;
     }
+    public EU(Formula innerFormula, Formula outerFormula) {
+        this.innerFormula = innerFormula;
+        this.outerFormula = outerFormula;
+    }
     public Boolean getIsVerified() {
         return isVerified;
     }

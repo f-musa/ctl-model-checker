@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import parser.ctl.*;
+import parser.algo.*;
+
 
 
 public class DotParser {
@@ -114,8 +117,15 @@ public class DotParser {
     public  static  void main(String args []) {
 
         DotParser c = new DotParser();
+        Formula f = new EX(
+                        new And(
+                            new Not(new Atomic("A")),
+                            new Atomic("K"))
+                    );
         try {
-            c.parseDotFile("PathToDotFile");
+        Automata automata =   c.parseDotFile("example.dot");
+        Algorithms.markFormula(f,automata);
+        System.out.println("la formule F est "+((EX) f).getIsVerified());
         }catch (IOException e){}
 
     }

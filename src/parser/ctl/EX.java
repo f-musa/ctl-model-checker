@@ -6,6 +6,9 @@ public class EX extends Formula{
     public Formula getFormula() {
         return formula;
     }
+    public EX(Formula formula) {
+        this.formula = formula;
+    }
     public void setFormula(Formula formula) {
         this.formula = formula;
     }

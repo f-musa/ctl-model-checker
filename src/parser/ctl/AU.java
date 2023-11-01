@@ -7,6 +7,10 @@ public class AU extends Formula{
     public Formula getInnerFormula() {
         return innerFormula;
     }
+    public AU(Formula innerFormula, Formula outerFormula) {
+        this.innerFormula = innerFormula;
+        this.outerFormula = outerFormula;
+    }
     public void setInnerFormula(Formula innerFormula) {
         this.innerFormula = innerFormula;
     }
