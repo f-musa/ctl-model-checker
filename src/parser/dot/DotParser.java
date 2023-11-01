@@ -10,43 +10,6 @@ import java.util.regex.Pattern;
 
 
 
-
-class  State{
-    String name;
-    List<String> labels = new ArrayList<>();
-    boolean isInitial = false;
-
-    @Override
-    public String toString() {
-        String s="";
-        for (int i = 0; i <labels.size() ; i++) {
-             s = s+labels.get(i);
-        }
-        return  name + " " + s + isInitial;
-    }
-}
-
-class  Transition{
-    State from;
-    State to;
-
-    @Override
-    public String toString() {
-        return from +"->"+to;
-    }
-}
-
-class  Automata{
-    List<State> states = new ArrayList<>();
-    List<Transition> transitions = new ArrayList<>();
-    State initialState;
-
-    @Override
-    public String toString() {
-        return  states.toString() + "\n"+transitions.toString() +"\n L etat initial "+initialState;
-    }
-}
-
 public class DotParser {
 
     public State  parseState(String line){
