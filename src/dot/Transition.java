@@ -1,4 +1,4 @@
-package parser.dot;
+package dot;
 
 public class  Transition{
     State from;

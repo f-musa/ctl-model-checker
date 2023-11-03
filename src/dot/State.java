@@ -1,10 +1,10 @@
-package parser.dot;
+package dot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import parser.ctl.Formula;
+import ctl.ctlformula.Formula;
 
 public class  State{
     String name;

@@ -1,6 +1,6 @@
 # ctl-model-checker
 ## Compile
-```javac -d classes .\src\parser\algo\*.java .\src\parser\ctl\*.java .\src\parser\dot\*.java``` 
+```javac -d classes .\src\checker\*.java .\src\ctl\*.java .\src\ctl\ctlformula\*.java .\src\dot\*.java``` 
 
 ## Run
-``` java -cp classes parser.dot.DotParser``` 
+``` java -cp classes dot.DotParser``` 

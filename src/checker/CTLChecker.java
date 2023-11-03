@@ -1,9 +1,9 @@
-package parser.algo;
+package checker;
 
-import parser.ctl.*;
-import parser.dot.*;
+import ctl.ctlformula.*;
+import dot.*;
 
-public class Algorithms {
+public class CTLChecker {
 
    
     public static void markAtomic(Formula formula , Automata automata )
@@ -12,7 +12,7 @@ public class Algorithms {
 
                 if(formula instanceof Atomic){ 
                 if(!state.getMarkings().containsKey(formula)){
-                    if(state.getLabels().contains(((Atomic)formula).getAtomicProposition())){
+                    if(state.getLabels().contains(((Atomic)formula).getName())){
                     state.getMarkings().put(formula, true);
                     }
                 else
@@ -42,8 +42,8 @@ public class Algorithms {
 
             else if(formula instanceof And){
                 
-                Formula leftFormula = ((And)formula).getLetFormula();
-                Formula rightFormula = ((And)formula).getRightFormula();
+                Formula leftFormula = ((And)formula).getLeft();
+                Formula rightFormula = ((And)formula).getRight();
                 markFormula(leftFormula,automata);                
                 markFormula(rightFormula,automata);
                 for(State state : automata.getStates()){
@@ -55,8 +55,8 @@ public class Algorithms {
         
             }
             else if(formula instanceof Or){
-                Formula leftFormula = ((Or)formula).getLetFormula();
-                Formula rightFormula = ((Or)formula).getRightFormula();
+                Formula leftFormula = ((Or)formula).getLeft();
+                Formula rightFormula = ((Or)formula).getRight();
                 markFormula(leftFormula,automata);                
                 markFormula(rightFormula,automata);
                for(State state : automata.getStates()){

@@ -1,4 +1,4 @@
-package parser.dot;
+package dot;
 
 import java.util.ArrayList;
 import java.util.List;

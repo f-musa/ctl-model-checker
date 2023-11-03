@@ -1,4 +1,4 @@
-package parser.dot;
+package dot;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import parser.ctl.*;
-import parser.algo.*;
+import checker.*;
+import ctl.ctlformula.*;
 
 
 
@@ -124,7 +124,7 @@ public class DotParser {
                     );
         try {
         Automata automata =   c.parseDotFile("example.dot");
-        Algorithms.markFormula(f,automata);
+        CTLChecker.markFormula(f,automata);
         System.out.println("la formule F est "+((EX) f).getIsVerified());
         }catch (IOException e){}
 
