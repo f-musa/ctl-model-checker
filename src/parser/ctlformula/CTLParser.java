@@ -7,7 +7,7 @@ public class CTLParser {
 
     public static void main(String[] args) {
         // Test your formula here, please
-        String formula = "A (E X ( P ) ) U (A ( P ) U (not Q ) )";
+        String formula = "A X (( P = > Q ) v A G( Q ) )";
         Formula parsedExpression = parse(formula.replace(" ",""));
         System.out.println(parsedExpression);
     }
@@ -29,6 +29,16 @@ public class CTLParser {
             for (int i = 0; i < formula.length(); i++) {
                 char c = formula.charAt(i);
 
+                if ((i + 1 < formula.length()) && (c == '=' && formula.charAt(i + 1) == '>')) {
+                    if (!token.isEmpty()) {
+                        tokens.add(token);
+                        token = "";
+                    }
+                    tokens.add("=>");
+                    i++;
+                    continue;
+                }
+
                 if (c == ' ' || c == '(' || c == ')' || c == '^' || c == 'v') {
                     if (!token.isEmpty()) {
                         tokens.add(token);
@@ -43,17 +53,35 @@ public class CTLParser {
                         tokens.add(token);
                         token = "";
                     }
+                    else if (token.equals("EF")) {
+                        tokens.add(token);
+                        token = "";
+                    }
+                    else if (token.equals("AX")) {
+                        tokens.add(token);
+                        token = "";
+                    }
+                    else if(token.equals("AG")){
+                        tokens.add(token);
+                        token = "";
+                    }
+                    else if(token.equals("AF")){
+                        tokens.add(token);
+                        token = "";
+                    }
                     else if(token.equals("not")){
                         tokens.add(token);
                         token = "";
                     }
-                    else if((token.equals("E") && formula.charAt(i+1)!='X')){
+                    else if((token.equals("E") && formula.charAt(i+1)!='X')&& formula.charAt(i+1)!='F' &&
+                            formula.charAt(i+1)!='G' ){
                          tokens.add(token);
                          token = "";
                     }
-                    else if((token.equals("A"))){
-                        tokens.add(token);
-                        token = "";
+                    else if((token.equals("A") && formula.charAt(i+1)!='G')&& formula.charAt(i+1)!='X' &&
+                            formula.charAt(i+1)!='F' ){
+                            tokens.add(token);
+                            token = "";
                     }
                 }
             }
@@ -87,7 +115,24 @@ public class CTLParser {
             return tokens.get(index++);
         }
 
+
+
+        // Inside the Parser class
+
         Formula parseFormula() {
+            Formula left = parseOrAnd();
+
+            while (peek() != null && peek().equals("=>")) {
+                consume(); // Consume '=>'
+                Formula right = parseOrAnd(); // Assume that '=>' has lower precedence than 'v' and '^'
+                left = new Implication(left, right);
+            }
+
+            return left;
+        }
+
+        // A new helper method to handle 'v' and '^'
+        Formula parseOrAnd() {
             Formula left = parseFactor();
 
             while (peek() != null && (peek().equals("v") || peek().equals("^"))) {
@@ -95,14 +140,14 @@ public class CTLParser {
                 Formula right = parseFactor();
                 if ("v".equals(op)) {
                     left = new Or(left, right);
-                } else if("^".equals(op)) {
+                } else if ("^".equals(op)) {
                     left = new And(left, right);
                 }
-
             }
 
             return left;
         }
+
 
         Formula parseFactor() {
             if (peek().equals("(")) {
@@ -113,7 +158,52 @@ public class CTLParser {
                 }
                 consume(); // Consume ')'
                 return inner;
-            } else if ("EX".equals(peek())) {
+            }
+            else if ("AX".equals(peek())) {
+                consume(); // consume 'EX'
+                if (!peek().equals("(")) {
+                    throw new IllegalArgumentException("Expected '(' after 'EX' but found: " + peek());
+                }
+                consume(); // consume '('
+                Formula inner = parseFormula();
+                if (!peek().equals(")")) {
+                    throw new IllegalArgumentException("Expected ')' but found: " + peek());
+                }
+                consume(); // consume ')'
+                return new AX(inner);
+            }
+            else if ("AF".equals(peek())) {
+                consume(); // consume 'EX'
+                if (!peek().equals("(")) {
+                    throw new IllegalArgumentException("Expected '(' after 'EF' but found: " + peek());
+                }
+                consume(); // consume '('
+                Formula inner = parseFormula();
+                if (!peek().equals(")")) {
+                    throw new IllegalArgumentException("Expected ')' but found: " + peek());
+                }
+                consume(); // consume ')'
+                return new AF(inner);
+            }
+            else if ("AG".equals(peek())) {
+                consume(); // consume 'EX'
+                if (!peek().equals("(")) {
+                    throw new IllegalArgumentException("Expected '(' after 'EF' but found: " + peek());
+                }
+                consume(); // consume '('
+                Formula inner = parseFormula();
+                if (!peek().equals(")")) {
+                    throw new IllegalArgumentException("Expected ')' but found: " + peek());
+                }
+                consume(); // consume ')'
+                return new AG(inner);
+            }
+            else if ("not".equals(peek())) {
+                consume();
+                Formula negated = parseFactor();
+                return new Not(negated);
+            }
+            else if ("EX".equals(peek())) {
                 consume(); // consume 'EX'
                 if (!peek().equals("(")) {
                     throw new IllegalArgumentException("Expected '(' after 'EX' but found: " + peek());
@@ -125,11 +215,34 @@ public class CTLParser {
                 }
                 consume(); // consume ')'
                 return new EX(inner);
-            } else if ("not".equals(peek())) {
-                consume();
-                Formula negated = parseFactor();
-                return new Not(negated);
             }
+            else if ("EF".equals(peek())) {
+                consume(); // consume 'EX'
+                if (!peek().equals("(")) {
+                    throw new IllegalArgumentException("Expected '(' after 'EF' but found: " + peek());
+                }
+                consume(); // consume '('
+                Formula inner = parseFormula();
+                if (!peek().equals(")")) {
+                    throw new IllegalArgumentException("Expected ')' but found: " + peek());
+                }
+                consume(); // consume ')'
+                return new EF(inner);
+            }
+            else if ("EG".equals(peek())) {
+                consume(); // consume 'EX'
+                if (!peek().equals("(")) {
+                    throw new IllegalArgumentException("Expected '(' after 'EF' but found: " + peek());
+                }
+                consume(); // consume '('
+                Formula inner = parseFormula();
+                if (!peek().equals(")")) {
+                    throw new IllegalArgumentException("Expected ')' but found: " + peek());
+                }
+                consume(); // consume ')'
+                return new EG(inner);
+            }
+
             else if (peek().equals("E")) {
                 consume(); // consume 'E'
                 // Ensure the next character is '('
@@ -204,6 +317,70 @@ public class CTLParser {
         }
     }
 
+    static class EF implements Formula {
+        private final Formula formula;
+
+        public EF(Formula formula) {
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return "EF(" + formula.toString() + ")";
+        }
+    }
+
+    static class EG implements Formula {
+        private final Formula formula;
+
+        public EG(Formula formula) {
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return "EG(" + formula.toString() + ")";
+        }
+    }
+
+    static class AX implements Formula {
+        private final Formula formula;
+
+        public AX(Formula formula) {
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return "AX(" + formula.toString() + ")";
+        }
+    }
+    static class AF implements Formula {
+        private final Formula formula;
+
+        public AF(Formula formula) {
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return "AF(" + formula.toString() + ")";
+        }
+    }
+
+    static class AG implements Formula {
+        private final Formula formula;
+
+        public AG(Formula formula) {
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return "AG(" + formula.toString() + ")";
+        }
+    }
+
     static class Atomic implements Formula {
         private final String name;
 
@@ -259,7 +436,7 @@ public class CTLParser {
 
         @Override
         public String toString() {
-            return this.getClass().getSimpleName()+formula.toString();
+            return this.getClass().getSimpleName()+ "("+formula.toString()+")";
         }
     }
 
@@ -303,5 +480,21 @@ public class CTLParser {
             return  getClass().getSimpleName()+ "(" + left.toString() + "," + right.toString() + ")";
         }
     }
+
+    static class Implication implements Formula {
+        private final Formula left;
+        private final Formula right;
+
+        public Implication(Formula left, Formula right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public String toString() {
+            return "Implication(" + left.toString() + " => " + right.toString() + ")";
+        }
+    }
+
 
 }
