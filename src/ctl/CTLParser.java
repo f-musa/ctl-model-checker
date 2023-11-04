@@ -8,7 +8,7 @@ public class CTLParser {
 
     public static void main(String[] args) {
         // Test your formula here, please
-        String formula = "A X (( P = > Q ) v A G( Q ) )";
+        String formula = " A (E X ( P ) ) U (A ( P ) U (not Q ) )";
         Formula parsedExpression = parse(formula.replace(" ",""));
         System.out.println(parsedExpression);
     }
@@ -112,7 +112,6 @@ public class CTLParser {
         }
 
         String consume() {
-            System.out.println(index +  tokens.get(index)+" nothing");
             return tokens.get(index++);
         }
 

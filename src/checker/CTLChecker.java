@@ -1,5 +1,9 @@
 package checker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import ctl.ctlformula.*;
 import dot.*;
 
@@ -76,13 +80,70 @@ public class CTLChecker {
                 automata.getTransitions().forEach(transition->{
                     if(transition.getTo().getMarkings().get(innerFormula).booleanValue()==true){
                         System.out.println("FOUND IN  : " +transition.getFrom().getName() + "->" + transition.getTo().getName()  );
-                        transition.getTo().getMarkings().put(formula, true);
+                        transition.getFrom().getMarkings().put(formula, true);
                         if(((EX) formula).getIsVerified() == null)
                             ((EX) formula).setIsVerified(true);
                     }
                 });
                 if(((EX) formula).getIsVerified() == null)
                         ((EX) formula).setIsVerified(false);
+            }
+            else if(formula instanceof E){
+                Formula innerFormula = ((E) formula).getFormula();
+                Formula leftFormula = ((Until) innerFormula).getLeft();
+                Formula rightFormula = ((Until) innerFormula).getRight();
+                HashMap<State, Boolean> SeenBeefore = new HashMap<>();
+                List<State> L = new ArrayList<>();
+                //We mark all the states that verifies the left and right formulas
+                markFormula(leftFormula, automata);
+                markFormula(rightFormula, automata);
+                //We mark the mainFormula as false on all the states 
+                automata.getStates().forEach(state->{
+                    if(!state.getMarkings().containsKey(formula))
+                        state.getMarkings().put(formula,false); 
+                        SeenBeefore.put(state,false);
+                });
+                L.clear();
+                automata.getStates().forEach(state->{
+                    // We retrieve all the states q that satisfies the UNTIL(rightFormula) condition 
+                   if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                    L.add(state);
+                   }
+                });
+                //We go through the list and verify the predecessors of q that verify the left formula.
+                while(!L.isEmpty()){
+                  State q = L.remove(0);
+                  //We mark that q satisfy the main formula
+                  q.getMarkings().replace(formula,true);
+                  
+                  automata.getTransitions().forEach(transition->{
+                    State q2 = transition.getFrom();
+                    if(transition.getTo().equals(q)){
+                        if(SeenBeefore.get(q2).booleanValue() == false){
+                        SeenBeefore.replace(q2, true);
+                        if(q2.getMarkings().get(leftFormula).booleanValue()==true){
+                            L.add(q2);
+                        }
+                    }
+                    }
+                    
+                });
+                }
+
+                //We verify if one the states verify the main formula
+                automata.getStates().forEach(state->{
+                    if (state.getMarkings().get(formula).booleanValue() == true){
+                        System.out.println("FOUND IN  : " +state.getName() );
+
+                        if(((E) formula).getIsVerified() == null)
+                            ((E) formula).setIsVerified(true);
+
+                    }
+                });
+                //If none of the states verify the formula we set the result to false
+                if(((E) formula).getIsVerified() == null)
+                    ((E) formula).setIsVerified(false);
+
             }
                
     }

@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,15 +118,17 @@ public class DotParser {
     public  static  void main(String args []) {
 
         DotParser c = new DotParser();
-        Formula f = new EX(
-                        new And(
-                            new Not(new Atomic("A")),
-                            new Atomic("K"))
+        Formula f = new E(
+                        new Until(
+                            new Not(new Atomic("Q")),
+                            new Or(new Atomic("P"), new Atomic("Q"))
+                        )
                     );
+                    //
         try {
         Automata automata =   c.parseDotFile("example.dot");
         CTLChecker.markFormula(f,automata);
-        System.out.println("la formule F est "+((EX) f).getIsVerified());
+        System.out.println("la formule F est "+((E) f).getIsVerified());
         }catch (IOException e){}
 
     }

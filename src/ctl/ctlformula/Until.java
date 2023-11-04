@@ -19,7 +19,6 @@ public class Until implements Formula {
     public void setRight(Formula right) {
         this.right = right;
     }
-
  
 
     public Until(Formula left, Formula right) {
