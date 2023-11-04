@@ -5,12 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import checker.*;
-import ctl.ctlformula.*;
 
 
 
@@ -107,7 +104,7 @@ public class DotParser {
                 }
             }
 
-            System.out.println( automata + "My automata");
+            // System.out.println( automata + "My automata");
 
             return automata;
         }
@@ -115,23 +112,23 @@ public class DotParser {
 
 
 
-    public  static  void main(String args []) {
+    // public  static  void main(String args []) {
 
-        DotParser c = new DotParser();
-        Formula f = new E(
-                        new Until(
-                            new Not(new Atomic("Q")),
-                            new Or(new Atomic("P"), new Atomic("Q"))
-                        )
-                    );
-                    //
-        try {
-        Automata automata =   c.parseDotFile("example.dot");
-        CTLChecker.markFormula(f,automata);
-        System.out.println("la formule F est "+((E) f).getIsVerified());
-        }catch (IOException e){}
+    //     DotParser c = new DotParser();
+    //     Formula f = new E(
+    //                     new Until(
+    //                         new Not(new Atomic("Q")),
+    //                         new Or(new Atomic("P"), new Atomic("Q"))
+    //                     )
+    //                 );
+    //                 //
+    //     try {
+    //     Automata automata =   c.parseDotFile("example.dot");
+    //     CTLChecker.markFormula(f,automata);
+    //     System.out.println("la formule F est "+((E) f).getIsVerified());
+    //     }catch (IOException e){}
 
-    }
+    // }
 
 
 }

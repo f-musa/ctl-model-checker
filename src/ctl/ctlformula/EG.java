@@ -13,6 +13,7 @@ public class EG implements Formula {
         this.formula = formula;
     }
 
+    @Override
     public Boolean getIsVerified() {
         return isVerified;
     }

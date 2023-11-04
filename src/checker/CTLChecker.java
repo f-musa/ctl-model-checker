@@ -1,15 +1,45 @@
 package checker;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import ctl.CTLParser;
 import ctl.ctlformula.*;
 import dot.*;
 
 public class CTLChecker {
 
-   
+   public static void main(String[] args)  {
+    String dotFile = args[0];
+    String ctlFile = args[1];
+    DotParser dotParser = new DotParser();
+
+    try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
+            String line;
+            Integer i = 1;
+            while ((line = br.readLine()) != null) {
+               String sanitizedLine = line.replaceAll(" ", "");
+                Formula f = CTLParser.parse(sanitizedLine);
+                Automata automata =   dotParser.parseDotFile(dotFile);
+                markFormula(f,automata);
+                if(f.getIsVerified().booleanValue()==true){
+                    System.out.println("Formule "+(i++)+" : Vrai :-)");
+                }
+                else
+                    System.out.println("Formule "+(i++)+" : Fausse :-(");
+            }
+
+        }
+        catch (Exception e) {
+            System.out.println(e);
+    }
+
+
+   }
     public static void markAtomic(Formula formula , Automata automata )
     {
             for(State state : automata.getStates()) {
@@ -79,7 +109,7 @@ public class CTLChecker {
                 });
                 automata.getTransitions().forEach(transition->{
                     if(transition.getTo().getMarkings().get(innerFormula).booleanValue()==true){
-                        System.out.println("FOUND IN  : " +transition.getFrom().getName() + "->" + transition.getTo().getName()  );
+                        // System.out.println("FOUND IN  : " +transition.getFrom().getName() + "->" + transition.getTo().getName()  );
                         transition.getFrom().getMarkings().put(formula, true);
                         if(((EX) formula).getIsVerified() == null)
                             ((EX) formula).setIsVerified(true);
@@ -133,7 +163,7 @@ public class CTLChecker {
                 //We verify if one the states verify the main formula
                 automata.getStates().forEach(state->{
                     if (state.getMarkings().get(formula).booleanValue() == true){
-                        System.out.println("FOUND IN  : " +state.getName() );
+                        // System.out.println("FOUND IN  : " +state.getName() );
 
                         if(((E) formula).getIsVerified() == null)
                             ((E) formula).setIsVerified(true);

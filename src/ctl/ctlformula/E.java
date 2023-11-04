@@ -21,6 +21,7 @@ public class E implements Formula {
         this.formula = formula;
     }
 
+    @Override
     public Boolean getIsVerified() {
         return isVerified;
     }

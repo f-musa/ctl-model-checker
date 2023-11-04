@@ -19,4 +19,10 @@ public class Always implements Formula {
     public void setFormula(Formula formula) {
         this.formula = formula;
     }
+
+    @Override
+    public Boolean getIsVerified() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+    }
 }

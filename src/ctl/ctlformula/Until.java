@@ -30,4 +30,10 @@ public class Until implements Formula {
     public String toString() {
         return  getClass().getSimpleName()+ "(" + left.toString() + "," + right.toString() + ")";
     }
+
+    @Override
+    public Boolean getIsVerified() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+    }
 }

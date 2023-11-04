@@ -19,4 +19,10 @@ public class Not implements Formula {
     public String toString() {
         return this.getClass().getSimpleName()+ "("+formula.toString()+")";
     }
+
+    @Override
+    public Boolean getIsVerified() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+    }
 }

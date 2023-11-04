@@ -29,4 +29,10 @@ public class And implements Formula {
     public String toString() {
         return this.getClass().getSimpleName() +"("+left.toString()+","+ right.toString()+")";
     }
+
+    @Override
+    public Boolean getIsVerified() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+    }
 }

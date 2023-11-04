@@ -19,4 +19,10 @@ public class Atomic implements Formula {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public Boolean getIsVerified() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+    }
 }

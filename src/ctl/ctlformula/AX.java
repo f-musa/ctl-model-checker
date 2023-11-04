@@ -11,7 +11,8 @@ public class AX implements Formula {
     public void setFormula(Formula formula) {
         this.formula = formula;
     }
-
+    
+    @Override
     public Boolean getIsVerified() {
         return isVerified;
     }
