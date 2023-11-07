@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import ctl.CTLParser;
 import ctl.ctlformula.*;
@@ -47,10 +46,10 @@ public class CTLChecker {
                 if(formula instanceof Atomic){ 
                 if(!state.getMarkings().containsKey(formula)){
                     if(state.getLabels().contains(((Atomic)formula).getName())){
-                    state.getMarkings().put(formula, true);
+                    state.setMarkage(formula, true);
                     }
                 else
-                    state.getMarkings().put(formula, false);
+                    state.setMarkage(formula, false);
                 }       
             }                  
         }
@@ -67,11 +66,10 @@ public class CTLChecker {
                 Formula innerFormula = ((Not)formula).getFormula();
                 markFormula(innerFormula, automata);
                 automata.getStates().forEach(state->{
-                   Boolean value =  state.getMarkings().get(innerFormula);
-                   if(!state.getMarkings().containsKey(formula))
-                        state.getMarkings().put(formula,!value);
+                   Boolean value =  state.getMarkage(innerFormula);
+                   state.setMarkage(formula,!value);
                 });
-            
+                //ISVERIFIED TO HANDLE
             }
 
             else if(formula instanceof And){
@@ -81,10 +79,9 @@ public class CTLChecker {
                 markFormula(leftFormula,automata);                
                 markFormula(rightFormula,automata);
                 for(State state : automata.getStates()){
-                    Boolean leftValue = state.getMarkings().get(leftFormula);
-                    Boolean rightValue = state.getMarkings().get(rightFormula);
-                    if(!state.getMarkings().containsKey(formula))
-                        state.getMarkings().put(formula,leftValue&&rightValue);
+                    Boolean leftValue = state.getMarkage(leftFormula);
+                    Boolean rightValue = state.getMarkage(rightFormula);
+                    state.setMarkage(formula,leftValue&&rightValue);
                 }
         
             }
@@ -94,29 +91,26 @@ public class CTLChecker {
                 markFormula(leftFormula,automata);                
                 markFormula(rightFormula,automata);
                for(State state : automata.getStates()){
-                    Boolean leftValue = state.getMarkings().get(leftFormula);
-                    Boolean rightValue = state.getMarkings().get(rightFormula);
-                    if(!state.getMarkings().containsKey(formula))
-                        state.getMarkings().put(formula,leftValue||rightValue);
+                    Boolean leftValue = state.getMarkage(leftFormula);
+                    Boolean rightValue = state.getMarkage(rightFormula);
+                    state.setMarkage(formula,leftValue||rightValue);
                 }
             }
             else if(formula instanceof EX){
+                ((EX) formula).setIsVerified(false);
                 Formula innerFormula = ((EX) formula).getFormula();
                 markFormula(innerFormula, automata);
                 automata.getStates().forEach(state->{
-                    if(!state.getMarkings().containsKey(formula))
-                        state.getMarkings().put(formula,false); 
+                    state.setMarkage(formula,false); 
                 });
                 automata.getTransitions().forEach(transition->{
-                    if(transition.getTo().getMarkings().get(innerFormula).booleanValue()==true){
+                    if(transition.getTo().getMarkage(innerFormula)==true){
                         // System.out.println("FOUND IN  : " +transition.getFrom().getName() + "->" + transition.getTo().getName()  );
-                        transition.getFrom().getMarkings().put(formula, true);
-                        if(((EX) formula).getIsVerified() == null)
-                            ((EX) formula).setIsVerified(true);
+                        transition.getFrom().setMarkage(formula, true);
+                        ((EX) formula).setIsVerified(true);
                     }
                 });
-                if(((EX) formula).getIsVerified() == null)
-                        ((EX) formula).setIsVerified(false);
+                
             }
             else if(formula instanceof E){
                 Formula innerFormula = ((E) formula).getFormula();
@@ -129,14 +123,13 @@ public class CTLChecker {
                 markFormula(rightFormula, automata);
                 //We mark the mainFormula as false on all the states 
                 automata.getStates().forEach(state->{
-                    if(!state.getMarkings().containsKey(formula))
-                        state.getMarkings().put(formula,false); 
-                        SeenBeefore.put(state,false);
+                    state.setMarkage(formula,false); 
+                    SeenBeefore.put(state,false);
                 });
                 L.clear();
                 automata.getStates().forEach(state->{
                     // We retrieve all the states q that satisfies the UNTIL(rightFormula) condition 
-                   if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                   if(state.getMarkage(rightFormula)==true){
                     L.add(state);
                    }
                 });
@@ -144,17 +137,17 @@ public class CTLChecker {
                 while(!L.isEmpty()){
                   State q = L.remove(0);
                   //We mark that q satisfy the main formula
-                  q.getMarkings().replace(formula,true);
+                  q.setMarkage(formula,true);
                   
                   automata.getTransitions().forEach(transition->{
                     State q2 = transition.getFrom();
                     if(transition.getTo().equals(q)){
-                        if(SeenBeefore.get(q2).booleanValue() == false){
-                        SeenBeefore.replace(q2, true);
-                        if(q2.getMarkings().get(leftFormula).booleanValue()==true){
-                            L.add(q2);
+                        if(SeenBeefore.get(q2) == false){
+                            SeenBeefore.put(q2, true);
+                            if(q2.getMarkage(leftFormula)==true){
+                                L.add(q2);
+                            }
                         }
-                    }
                     }
                     
                 });
@@ -162,10 +155,12 @@ public class CTLChecker {
                 ((E)formula).setIsVerified(false);
                 //We check if there for every state that satisfies the right formula if all his predecessors satifies the main formula
                 automata.getStates().forEach(state->{
-                    if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                    if(state.getMarkage(rightFormula)==true){
                         List<State> Predecessors = automata.getPath(state);
                         if(!Predecessors.isEmpty()){
-                            Boolean result = Predecessors.removeIf( pred-> pred.getMarkings().get(formula).booleanValue()==false);
+                            Boolean result = Predecessors.removeIf( 
+                                pred-> pred.getMarkage(formula)==false
+                            );
                             if(result==false)
                                 ((E)formula).setIsVerified(true);
                         }
@@ -185,18 +180,18 @@ public class CTLChecker {
                 L.clear();
                 //We calculate the degree of each state and asses the main formula as false on all states
                 automata.getStates().forEach(state->{
-                    state.getMarkings().replace(formula,false);
+                    state.setMarkage(formula,false);
                     //Increment the degree
                     automata.getTransitions().forEach(transition->{
                     if(transition.getFrom().equals(state) ){
                         Integer stateDegree = degree.getOrDefault(state,0) + 1;
-                        degree.replace(state,stateDegree);
+                        degree.put(state,stateDegree);
                     }
                     }); 
                 });
                 // We retrieve all the states q that satisfies the UNTIL(rightFormula) condition 
                 automata.getStates().forEach(state->{
-                   if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                   if(state.getMarkage(rightFormula)==true){
                     L.add(state);
                    }
                 });
@@ -205,24 +200,27 @@ public class CTLChecker {
                 while(!L.isEmpty()){
                      State q = L.remove(0);
                     //We mark that q satisfy the main formula
-                    q.getMarkings().replace(formula,true);
+                    q.setMarkage(formula,true);
 
                     automata.getTransitions().forEach(transition->{
                         if(transition.getTo().equals(q) ){
                             State q2 = transition.getFrom();
-                            Integer q2Degree = degree.getOrDefault(q2,1);
-                            degree.replace(q2,q2Degree-1);
+                            Integer q2Degree = degree.get(q2);
+                            if(q2Degree<=1)
+                                degree.replace(q2,0);
+                            else
+                                degree.replace(q2,q2Degree-1);
                             if(
                                 degree.get(q2).intValue() == 0 
-                                && q2.getMarkings().get(leftFormula).booleanValue() == true
-                                &&  q2.getMarkings().get(formula).booleanValue() == false
+                                && q2.getMarkage(leftFormula) == true
+                                &&  q2.getMarkage(formula) == false
                             ){
                                 L.add(q2);
                             }
                         }
                     }); 
                 }
-                //
+                //TODO VERIFICATION
             }
     }
 }

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ctl.ctlformula.Formula;
+
 public class Automata {
  
     List<State> states = new ArrayList<>();
@@ -47,7 +49,7 @@ public class Automata {
         });
         return  states.toString() + "\n"+transitions.toString() +"\n L etat initial "+initialState;
     }
-
+    
    public List<State> getPath(State s){
         List<State> Predecessors = new ArrayList<>();
         List<State> temp = new ArrayList<>();

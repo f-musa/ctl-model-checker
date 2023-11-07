@@ -53,4 +53,10 @@ public class  State{
         }
         return  name + " " + s + isInitial;
     }
+    public Boolean getMarkage( Formula f){
+        return this.getMarkings().get(f);
+    }
+    public void setMarkage(Formula f, Boolean value){
+        this.markings.put(f,value);
+    }
 }

@@ -2,7 +2,7 @@ package ctl.ctlformula;
 
 public class Not implements Formula {
     private  Formula formula;
-
+    private Boolean isVerified;
     public Formula getFormula() {
         return formula;
     }
@@ -22,7 +22,9 @@ public class Not implements Formula {
 
     @Override
     public Boolean getIsVerified() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+        return this.isVerified;
+    }
+    public void setIsVerified(Boolean value){
+        this.isVerified = value;
     }
 }

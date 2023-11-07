@@ -1,8 +1,8 @@
 digraph mon_systeme {
     /* Liste des n÷uds avec leurs labels séparés par des espaces */
     q1 [ label =" P Q "];
-    q2 [ label =" P "];
-    q3 [ label =" Q "];
+    q2 [ label =" P M"];
+    q3 [ label ="  C"];
     q4 [ label ="  "];
 
     /* Un seul n÷ud initial */

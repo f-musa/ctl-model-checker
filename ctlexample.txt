@@ -1,4 +1,5 @@
 E X ( P )
+E X ( E X ( C ) )
 E X ( P ^ Q )
-E (not Q ) U ( P v Q )
+E (not M ) U ( P v Q )
 E ( P v Q ) U ( Q ^ not P )
