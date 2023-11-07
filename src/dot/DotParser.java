@@ -104,31 +104,10 @@ public class DotParser {
                 }
             }
 
-            // System.out.println( automata + "My automata");
 
             return automata;
         }
     }
-
-
-
-    // public  static  void main(String args []) {
-
-    //     DotParser c = new DotParser();
-    //     Formula f = new E(
-    //                     new Until(
-    //                         new Not(new Atomic("Q")),
-    //                         new Or(new Atomic("P"), new Atomic("Q"))
-    //                     )
-    //                 );
-    //                 //
-    //     try {
-    //     Automata automata =   c.parseDotFile("example.dot");
-    //     CTLChecker.markFormula(f,automata);
-    //     System.out.println("la formule F est "+((E) f).getIsVerified());
-    //     }catch (IOException e){}
-
-    // }
 
 
 }

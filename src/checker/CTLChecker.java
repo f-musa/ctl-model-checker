@@ -1,12 +1,12 @@
 package checker;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
 import ctl.CTLParser;
 import ctl.ctlformula.*;
 import dot.*;
@@ -14,8 +14,8 @@ import dot.*;
 public class CTLChecker {
 
    public static void main(String[] args)  {
-    String dotFile = args[0];
-    String ctlFile = args[1];
+    String dotFile = "example.dot";
+    String ctlFile = "ctlexample.txt";
     DotParser dotParser = new DotParser();
 
     try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
@@ -159,23 +159,71 @@ public class CTLChecker {
                     
                 });
                 }
-
-                //We verify if one the states verify the main formula
+                ((E)formula).setIsVerified(false);
+                //We check if there for every state that satisfies the right formula if all his predecessors satifies the main formula
                 automata.getStates().forEach(state->{
-                    if (state.getMarkings().get(formula).booleanValue() == true){
-                        // System.out.println("FOUND IN  : " +state.getName() );
-
-                        if(((E) formula).getIsVerified() == null)
-                            ((E) formula).setIsVerified(true);
-
+                    if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                        List<State> Predecessors = automata.getPath(state);
+                        if(!Predecessors.isEmpty()){
+                            Boolean result = Predecessors.removeIf( pred-> pred.getMarkings().get(formula).booleanValue()==false);
+                            if(result==false)
+                                ((E)formula).setIsVerified(true);
+                        }
                     }
                 });
-                //If none of the states verify the formula we set the result to false
-                if(((E) formula).getIsVerified() == null)
-                    ((E) formula).setIsVerified(false);
-
+                
             }
-               
+            else if(formula instanceof Always){
+                Formula innerFormula = ((Always) formula).getFormula();
+                Formula leftFormula = ((Until) innerFormula).getLeft();
+                Formula rightFormula = ((Until) innerFormula).getRight();
+                HashMap<State, Integer> degree = new HashMap<>();
+                List<State> L = new ArrayList<>();
+                //We mark all the states that verifies the left and right formulas
+                markFormula(leftFormula, automata);
+                markFormula(rightFormula, automata);
+                L.clear();
+                //We calculate the degree of each state and asses the main formula as false on all states
+                automata.getStates().forEach(state->{
+                    state.getMarkings().replace(formula,false);
+                    //Increment the degree
+                    automata.getTransitions().forEach(transition->{
+                    if(transition.getFrom().equals(state) ){
+                        Integer stateDegree = degree.getOrDefault(state,0) + 1;
+                        degree.replace(state,stateDegree);
+                    }
+                    }); 
+                });
+                // We retrieve all the states q that satisfies the UNTIL(rightFormula) condition 
+                automata.getStates().forEach(state->{
+                   if(state.getMarkings().get(rightFormula).booleanValue()==true){
+                    L.add(state);
+                   }
+                });
+                
+                 //We go through the list and verify the predecessors of q that verify the left formula.
+                while(!L.isEmpty()){
+                     State q = L.remove(0);
+                    //We mark that q satisfy the main formula
+                    q.getMarkings().replace(formula,true);
+
+                    automata.getTransitions().forEach(transition->{
+                        if(transition.getTo().equals(q) ){
+                            State q2 = transition.getFrom();
+                            Integer q2Degree = degree.getOrDefault(q2,1);
+                            degree.replace(q2,q2Degree-1);
+                            if(
+                                degree.get(q2).intValue() == 0 
+                                && q2.getMarkings().get(leftFormula).booleanValue() == true
+                                &&  q2.getMarkings().get(formula).booleanValue() == false
+                            ){
+                                L.add(q2);
+                            }
+                        }
+                    }); 
+                }
+                //
+            }
     }
 }
 
