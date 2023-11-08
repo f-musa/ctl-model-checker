@@ -58,9 +58,11 @@ public class Automata {
             State current = temp.remove(0);
             this.transitions.forEach((transition) ->{
             if(transition.getTo()==current){
-                if(!Predecessors.contains(transition.getFrom()))
+                if(!Predecessors.contains(transition.getFrom()) && !transition.getFrom().equals(s)){
                      Predecessors.add(transition.getFrom());
-                temp.add(transition.getFrom());
+                    temp.add(transition.getFrom());
+                }
+                    
             }
         });
         }
