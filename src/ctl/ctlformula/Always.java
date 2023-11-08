@@ -2,7 +2,7 @@ package ctl.ctlformula;
 
 public class Always implements Formula {
     private  Formula formula;
-
+    private Boolean isVerified;
     public Always(Formula formula) {
         this.formula = formula;
     }
@@ -22,7 +22,9 @@ public class Always implements Formula {
 
     @Override
     public Boolean getIsVerified() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+        return this.isVerified;
+    }
+    public void setIsVerified(Boolean value){
+        this.isVerified = value;
     }
 }

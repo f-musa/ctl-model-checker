@@ -26,15 +26,15 @@ public class CTLChecker {
                 Automata automata =   dotParser.parseDotFile(dotFile);
                 markFormula(f,automata);
                 if(f.getIsVerified().booleanValue()==true){
-                    System.out.println("Formule "+(i++)+" : Vrai :-)");
+                    System.out.println("Formule "+(i++)+" : Vrai  :-)");
                 }
                 else
-                    System.out.println("Formule "+(i++)+" : Fausse :-(");
+                    System.out.println("Formule "+(i++)+" : Faux  :-(");
             }
 
         }
         catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getStackTrace());
     }
 
 
@@ -70,6 +70,7 @@ public class CTLChecker {
                    state.setMarkage(formula,!value);
                 });
                 //ISVERIFIED TO HANDLE
+                ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
             }
 
             else if(formula instanceof And){
@@ -126,7 +127,7 @@ public class CTLChecker {
                     state.setMarkage(formula,false); 
                     SeenBeefore.put(state,false);
                 });
-                L.clear();
+               
                 automata.getStates().forEach(state->{
                     // We retrieve all the states q that satisfies the UNTIL(rightFormula) condition 
                    if(state.getMarkage(rightFormula)==true){
@@ -153,7 +154,7 @@ public class CTLChecker {
                 });
                 }
                 ((E)formula).setIsVerified(false);
-                //We check if there for every state that satisfies the right formula if all his predecessors satifies the main formula
+                //We check if for every state that satisfies the right formula if all his predecessors satifies the main formula
                 automata.getStates().forEach(state->{
                     if(state.getMarkage(rightFormula)==true){
                         List<State> Predecessors = automata.getPath(state);
@@ -177,7 +178,7 @@ public class CTLChecker {
                 //We mark all the states that verifies the left and right formulas
                 markFormula(leftFormula, automata);
                 markFormula(rightFormula, automata);
-                L.clear();
+                
                 //We calculate the degree of each state and asses the main formula as false on all states
                 automata.getStates().forEach(state->{
                     state.setMarkage(formula,false);
@@ -196,6 +197,11 @@ public class CTLChecker {
                    }
                 });
                 
+                if(!L.isEmpty())
+                    ((Always) formula).setIsVerified(true);
+                else 
+                    ((Always) formula).setIsVerified(false);
+                
                  //We go through the list and verify the predecessors of q that verify the left formula.
                 while(!L.isEmpty()){
                      State q = L.remove(0);
@@ -211,7 +217,7 @@ public class CTLChecker {
                             else
                                 degree.replace(q2,q2Degree-1);
                             if(
-                                degree.get(q2).intValue() == 0 
+                                degree.get(q2) == 0 
                                 && q2.getMarkage(leftFormula) == true
                                 &&  q2.getMarkage(formula) == false
                             ){
@@ -220,7 +226,8 @@ public class CTLChecker {
                         }
                     }); 
                 }
-                //TODO VERIFICATION
+                // VERIFICATION
+
             }
     }
 }
