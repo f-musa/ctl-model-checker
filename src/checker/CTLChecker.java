@@ -34,7 +34,7 @@ public class CTLChecker {
 
         }
         catch (Exception e) {
-            System.out.println(e.getStackTrace());
+            System.out.println(e.getMessage());
     }
 
 
@@ -70,7 +70,8 @@ public class CTLChecker {
                    state.setMarkage(formula,!value);
                 });
                 //ISVERIFIED TO HANDLE
-                ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
+                if(! (innerFormula instanceof Atomic))
+                    ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
             }
 
             else if(formula instanceof And){

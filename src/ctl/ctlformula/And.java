@@ -33,6 +33,6 @@ public class And implements Formula {
     @Override
     public Boolean getIsVerified() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified' in AND");
     }
 }
