@@ -6,13 +6,7 @@ import java.util.List;
 import ctl.ctlformula.*;;
 public class CTLParser {
 
-    // public static void main(String[] args) {
-    //     // Test your formula here, please
-    //     String formula = " A (E X ( P ) ) U (A ( P ) U (not Q ) )";
-    //     Formula parsedExpression = parse(formula.replace(" ",""));
-    //     System.out.println(parsedExpression);
-    // }
-
+    
     public static Formula parse(String formula) {
         List<String> tokens = tokenize(formula);
         Parser parser = new Parser(tokens);
@@ -102,7 +96,6 @@ public class CTLParser {
 
             }
 
-            System.out.println(tokens);
             return tokens;
         }
 

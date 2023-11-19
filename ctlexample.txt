@@ -1,1 +1,5 @@
- A G (not P v (E F ( not Q ) ) )
+E X ( P )
+E X ( P ^ Q )
+E (not Q ) U ( P v Q )
+E ( P v Q ) U ( Q ^ not P )
+A (E X ( P ) ) U (A ( P ) U (not Q ) )

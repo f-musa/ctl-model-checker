@@ -13,8 +13,8 @@ import dot.*;
 public class CTLChecker {
 
    public static void main(String[] args)  {
-    String dotFile = "C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\ctl-model-checker\\example.dot";
-    String ctlFile = "C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\ctl-model-checker\\ctlexample.txt";;
+    String dotFile = args[0];
+    String ctlFile = args[1];
     DotParser dotParser = new DotParser();
 
     try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
@@ -23,15 +23,14 @@ public class CTLChecker {
             while ((line = br.readLine()) != null) {
                 String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
-                System.out.println(f);
-               Automata automata =   dotParser.parseDotFile(dotFile);
+                Automata automata =   dotParser.parseDotFile(dotFile);
                 markFormula(f,automata);
                 if(f.getIsVerified().booleanValue()==true){
 
-                    System.out.printf("%s Formule "+(i++)+ " : Vrai  :-) .%s%n", "\u001B[32m", "\u001B[0m");
+                    System.out.printf("%s Formule "+(i++)+ " : Vrai  :-) %s%n", "\u001B[32m", "\u001B[0m");
                 }
                 else
-                    System.out.printf("%s Formule "+(i++)+ " : Faux  :-( .%s%n", "\u001B[31m", "\u001B[31m");
+                    System.out.printf("%s Formule "+(i++)+ " : Faux  :-( %s%n", "\u001B[31m", "\u001B[31m");
 
 
             }
