@@ -30,6 +30,7 @@ public class CTLParser {
             for (int i = 0; i < formula.length(); i++) {
                 char c = formula.charAt(i);
 
+
                 if ((i + 1 < formula.length()) && (c == '=' && formula.charAt(i + 1) == '>')) {
                     if (!token.isEmpty()) {
                         tokens.add(token);
@@ -46,6 +47,7 @@ public class CTLParser {
                         token = "";
                     }
                     if (c != ' ') {
+
                         tokens.add(Character.toString(c));
                     }
                 } else {
@@ -74,6 +76,14 @@ public class CTLParser {
                         tokens.add(token);
                         token = "";
                     }
+                    else if(token.equals("true")){
+                        tokens.add(token);
+                        token = "";
+                    }
+                    else if(token.equals("false")){
+                        tokens.add(token);
+                        token = "";
+                    }
                     else if((token.equals("E") && formula.charAt(i+1)!='X')&& formula.charAt(i+1)!='F' &&
                             formula.charAt(i+1)!='G' ){
                          tokens.add(token);
@@ -89,8 +99,10 @@ public class CTLParser {
 
             if (!token.isEmpty()) {
                 tokens.add(token);
+
             }
 
+            System.out.println(tokens);
             return tokens;
         }
 
@@ -170,7 +182,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new AX(inner);
+                return new Not(new EX(new Not(inner)));
             }
             else if ("AF".equals(peek())) {
                 consume(); // consume 'EX'
@@ -183,7 +195,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new AF(inner);
+                return new Not(new EG(new Not(inner)));
             }
             else if ("AG".equals(peek())) {
                 consume(); // consume 'EX'
@@ -196,12 +208,20 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new AG(inner);
+                return new Not(new E(new Until(new Bool(true),new Not(inner))));
             }
             else if ("not".equals(peek())) {
                 consume();
                 Formula negated = parseFactor();
                 return new Not(negated);
+            }
+            else if("false".equals(peek())){
+                consume();
+                return  new Bool(false);
+            }
+            else if("true".equals(peek())){
+                consume();
+                return  new Bool(true);
             }
             else if ("EX".equals(peek())) {
                 consume(); // consume 'EX'
@@ -227,7 +247,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new EF(inner);
+                return new E (new Until(new Bool(true),inner));
             }
             else if ("EG".equals(peek())) {
                 consume(); // consume 'EX'
@@ -246,7 +266,7 @@ public class CTLParser {
             else if (peek().equals("E")) {
                 consume(); // consume 'E'
                 // Ensure the next character is '('
-                if (!peek().equals("(")) {
+                if (!peek().equals("(") && !peek().equals("true")&&!peek().equals("false")) {
                     throw new IllegalArgumentException("Expected '(' after 'E' but found: " + peek());
                 }
                 consume(); // consume '('
@@ -292,8 +312,6 @@ public class CTLParser {
 
             consume();
             Formula secondPart = parseFormula();
-
-
 
             return new Until(firstPart, secondPart);
         }

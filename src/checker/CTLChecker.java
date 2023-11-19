@@ -13,23 +13,27 @@ import dot.*;
 public class CTLChecker {
 
    public static void main(String[] args)  {
-    String dotFile = args[0];
-    String ctlFile = args[1];
+    String dotFile = "C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\ctl-model-checker\\example.dot";
+    String ctlFile = "C:\\Users\\teter\\OneDrive\\Bureau\\ModelChecker\\ctl-model-checker\\ctlexample.txt";;
     DotParser dotParser = new DotParser();
 
     try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
             String line;
             Integer i = 1;
             while ((line = br.readLine()) != null) {
-               String sanitizedLine = line.replaceAll(" ", "");
+                String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
-                Automata automata =   dotParser.parseDotFile(dotFile);
+                System.out.println(f);
+               Automata automata =   dotParser.parseDotFile(dotFile);
                 markFormula(f,automata);
                 if(f.getIsVerified().booleanValue()==true){
-                    System.out.println("Formule "+(i++)+" : Vrai  :-)");
+
+                    System.out.printf("%s Formule "+(i++)+ " : Vrai  :-) .%s%n", "\u001B[32m", "\u001B[0m");
                 }
                 else
-                    System.out.println("Formule "+(i++)+" : Faux  :-(");
+                    System.out.printf("%s Formule "+(i++)+ " : Faux  :-( .%s%n", "\u001B[31m", "\u001B[31m");
+
+
             }
 
         }
@@ -62,6 +66,7 @@ public class CTLChecker {
                 markAtomic(formula, automata);
             }
 
+
             else if(formula instanceof Not){
                 Formula innerFormula = ((Not)formula).getFormula();
                 markFormula(innerFormula, automata);
@@ -71,7 +76,8 @@ public class CTLChecker {
                 });
                 //ISVERIFIED TO HANDLE
                 if(! (innerFormula instanceof Atomic))
-                    ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
+                   ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
+
             }
 
             else if(formula instanceof And){
