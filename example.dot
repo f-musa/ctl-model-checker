@@ -8,7 +8,7 @@
  /* Un seul n÷ud initial */
  q1 [ shape = box ];
 
-/* Transitions */
+ /* Transitions */
  q1 -> q2 -> q3 ;
  q2 -> q4 ;
  q4 -> q4 ;

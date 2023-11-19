@@ -6,7 +6,7 @@ import java.util.List;
 
 import ctl.ctlformula.Formula;
 
-public class  State{
+public class  State implements Comparable<State>{
     String name;
 
     HashMap<Formula,Boolean>  markings = new HashMap<>(); 
@@ -58,5 +58,10 @@ public class  State{
     }
     public void setMarkage(Formula f, Boolean value){
         this.markings.put(f,value);
+    }
+
+    @Override
+    public int compareTo(State s) {
+       return s.getName().compareTo(this.getName());
     }
 }
