@@ -23,6 +23,7 @@ public class CTLChecker {
             while ((line = br.readLine()) != null) {
                 String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
+                System.out.println(f);
                 Automata automata =   dotParser.parseDotFile(dotFile);
                 markFormula(f,automata);
                 if(f.getIsVerified().booleanValue()==true){

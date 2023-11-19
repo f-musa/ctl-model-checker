@@ -130,7 +130,7 @@ public class CTLParser {
             while (peek() != null && peek().equals("=>")) {
                 consume(); // Consume '=>'
                 Formula right = parseOrAnd(); // Assume that '=>' has lower precedence than 'v' and '^'
-                left = new Implication(left, right);
+                left = new Or(new Not(left), right);
             }
 
             return left;
