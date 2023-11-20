@@ -76,7 +76,7 @@ public class Automata {
     }
 
     /**
-     * Function that return the direct successors of a given node
+     * Function that return the direct successors of a given node (if there is a loop, it is omitted from the successors list)
      * 
      * @param s
      * @return
@@ -85,7 +85,8 @@ public class Automata {
         List<State> Successors = new ArrayList<>();
         this.getTransitions().forEach(t -> {
             if (t.getFrom().equals(s)) {
-                Successors.add(t.getTo());
+                if(!t.getTo().equals(s))
+                    Successors.add(t.getTo());
             }
         });
         return Successors;
@@ -105,13 +106,14 @@ public class Automata {
                 currentPath.addToPath(currentState);
                 currentPathNodes.add(currentState);
 
+                
                 for (State succ : getSuccessors(currentState)) {
                     if (!VisitedStates.contains(succ) && !currentPathNodes.contains(succ) ) {
                         getAllPathFromRootUtility(succ, VisitedStates, currentPath,currentPathNodes, Paths);
                     }
                 }
             
-                // Check if the current state is a leaf node (no unvisited successors) (we also handle the case if the state is its own successor)
+                // Check if the current state is a leaf node (no unvisited successors) 
                 if (getSuccessors(currentState).isEmpty() ) {
                     Paths.add(new Path(currentPath));  // Add a copy of the current path
                 }

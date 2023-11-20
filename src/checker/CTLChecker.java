@@ -13,6 +13,7 @@ public class CTLChecker {
    public static void main(String[] args)  {
     String dotFile = args[0];
     String ctlFile = args[1];
+     
     DotParser dotParser = new DotParser();
 
     try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
@@ -21,7 +22,6 @@ public class CTLChecker {
             while ((line = br.readLine()) != null) {
                 String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
-                System.out.println(f);
                 Automata automata =   dotParser.parseDotFile(dotFile);
                 markFormula(f,automata);
                 if(f.getIsVerified().booleanValue()==true){
@@ -43,17 +43,21 @@ public class CTLChecker {
    }
     public static void markAtomic(Formula formula , Automata automata )
     {
-            for(State state : automata.getStates()) {
+         ((Atomic) formula).setIsVerified(false);   
+        for(State state : automata.getStates()) {
 
                 if(formula instanceof Atomic){ 
                 if(!state.getMarkings().containsKey(formula)){
                     if(state.getLabels().contains(((Atomic)formula).getName())){
-                    state.setMarkage(formula, true);
+                        state.setMarkage(formula, true);
+                        if (((Atomic) formula).getIsVerified()!=true) 
+                            ((Atomic) formula).setIsVerified(true);   
                     }
                 else
                     state.setMarkage(formula, false);
                 }       
-            }                  
+            }
+
         }
         ;
     }
@@ -72,9 +76,7 @@ public class CTLChecker {
                    state.setMarkage(formula,!value);
                 });
                 //ISVERIFIED TO HANDLE
-                if(! (innerFormula instanceof Atomic))
-                   ((Not)formula).setIsVerified(!innerFormula.getIsVerified());
-
+                ((Not) formula).setIsVerified(!innerFormula.getIsVerified());  
             }
 
             else if(formula instanceof And){
@@ -88,7 +90,8 @@ public class CTLChecker {
                     Boolean rightValue = state.getMarkage(rightFormula);
                     state.setMarkage(formula,leftValue&&rightValue);
                 }
-        
+                ((And) formula).setIsVerified(leftFormula.getIsVerified()&&rightFormula.getIsVerified());  
+
             }
             else if(formula instanceof Or){
                 Formula leftFormula = ((Or)formula).getLeft();
@@ -100,6 +103,7 @@ public class CTLChecker {
                     Boolean rightValue = state.getMarkage(rightFormula);
                     state.setMarkage(formula,leftValue||rightValue);
                 }
+                ((Or) formula).setIsVerified(leftFormula.getIsVerified()||rightFormula.getIsVerified());  
             }
             else if(formula instanceof EX){
                 ((EX) formula).setIsVerified(false);
@@ -234,16 +238,18 @@ public class CTLChecker {
         List<Boolean>PathsVerification = new ArrayList<>();
 
         for(Path p : AllPaths){
-            ArrayList<State> path = p.getPath();
+            ArrayList<State> path = new ArrayList<>(p.getPath());
             //if the path is empty the main formula is false for this path 
             if(path.isEmpty())
                 PathsVerification.add(false);
+               
             //else we will check the whole path
             else {
                 Boolean leftFormulaWasVerified = false;
                 State current ; 
 
-                while((current = path.remove(0))!=null){
+                while(!path.isEmpty()){
+                    current = path.remove(0);
                     // if the node satisfies the left formula but the not right formula we take a step to check for the "until" 
                     if(current.getMarkage(leftFormula)== true && current.getMarkage(rightFormula)== false ){
                         leftFormulaWasVerified= true;
@@ -264,6 +270,9 @@ public class CTLChecker {
                         PathsVerification.add(false);
                         break;
                     }
+                    //if this is the end of the path
+                    if(p.getLast().equals(current))
+                        PathsVerification.add(false);
                 }
             }
 

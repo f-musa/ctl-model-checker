@@ -15,6 +15,11 @@ public class Path {
     public Path(Path path) {
         this.p = new ArrayList<>(path.getPath());;
     }
+    public State getLast(){
+        if(!this.getPath().isEmpty())
+            return this.getPath().get(this.getPath().size() - 1);
+        return null;
+    }
     
     
     public void setPath(ArrayList<State> p) {

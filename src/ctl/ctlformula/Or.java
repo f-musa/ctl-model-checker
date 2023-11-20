@@ -3,7 +3,7 @@ package ctl.ctlformula;
 public class Or implements Formula {
     private  Formula left;
     private  Formula right;
-
+    private Boolean isVerified;
 
     public Formula getLeft() {
         return left;
@@ -34,7 +34,10 @@ public class Or implements Formula {
 
     @Override
     public Boolean getIsVerified() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified'");
+        return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
 }

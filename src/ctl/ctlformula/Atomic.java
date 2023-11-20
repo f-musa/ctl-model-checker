@@ -2,7 +2,7 @@ package ctl.ctlformula;
 
 public class Atomic implements Formula {
     private  String name;
-
+    private Boolean isVerified;
     public Atomic(String name) {
         this.name = name;
     }
@@ -10,6 +10,10 @@ public class Atomic implements Formula {
     @Override
     public String toString() {
         return this.getClass().getSimpleName()+"("+name+")";
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
 
     public String getName() {
@@ -22,7 +26,7 @@ public class Atomic implements Formula {
 
     @Override
     public Boolean getIsVerified() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified' in atomic");
+       return this.isVerified;
+       
     }
 }

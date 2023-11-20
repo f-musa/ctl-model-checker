@@ -3,6 +3,11 @@ package ctl.ctlformula;
 public class And implements Formula {
     private  Formula left;
     private  Formula right;
+    private Boolean isVerified;
+    
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
+    }
 
     public Formula getLeft() {
         return left;
@@ -32,7 +37,6 @@ public class And implements Formula {
 
     @Override
     public Boolean getIsVerified() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIsVerified' in AND");
+        return this.isVerified;
     }
 }
