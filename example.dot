@@ -1,15 +1,22 @@
- digraph mon_systeme {
- /* Liste des n÷uds avec leurs labels séparés par des espaces */
- q1 [ label =" P Q "];
- q2 [ label =" P "];
- q3 [ label =" Q "];
- q4 [ label =""];
+digraph complex_automaton {
+    /* States with labels */
+    q1 [label="K Y"];
+    q2 [label="Z"];
+    q3 [label="Y"];
+    q4 [label="Z"];
+    q5 [label="K Z"];
+    q6 [label="K Y Z"]; // Adjusted to have X, Y, and Z
+    q7 [label=""];
+    q8 [label="K"];
+    q9 [label="Y"];
 
- /* Un seul n÷ud initial */
- q1 [ shape = box ];
+    /* Initial State */
+    q1 [shape=box];
 
- /* Transitions */
- q1 -> q2 -> q3 ;
- q2 -> q4 ;
- q4 -> q4 ;
- }
+    /* Transitions */
+    q1 -> q2 -> q3 -> q4;
+    q2 -> q5 -> q6;
+    q6 -> q6; // Self-loop on q6 with X, Y, and Z
+    q4 -> q8 -> q5;
+    q8 -> q9 -> q1;
+}

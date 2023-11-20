@@ -2,9 +2,7 @@ package checker;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import ctl.CTLParser;
 import ctl.ctlformula.*;
@@ -65,7 +63,6 @@ public class CTLChecker {
             if(formula instanceof Atomic){
                 markAtomic(formula, automata);
             }
-
 
             else if(formula instanceof Not){
                 Formula innerFormula = ((Not)formula).getFormula();

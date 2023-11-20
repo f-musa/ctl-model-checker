@@ -188,7 +188,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new Not(new EG(new Not(inner)));
+                return new Always(new Until(generateTrue(),inner));
             }
             else if ("AG".equals(peek())) {
                 consume(); // consume 'EX'
@@ -201,7 +201,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new Not(new E(new Until(new Bool(true),new Not(inner))));
+                return new Not(new E(new Until(generateTrue(),new Not(inner))));
             }
             else if ("not".equals(peek())) {
                 consume();
@@ -210,11 +210,11 @@ public class CTLParser {
             }
             else if("false".equals(peek())){
                 consume();
-                return  new Bool(false);
+                return  new Not(generateTrue());
             }
             else if("true".equals(peek())){
                 consume();
-                return  new Bool(true);
+                return  generateTrue();
             }
             else if ("EX".equals(peek())) {
                 consume(); // consume 'EX'
@@ -240,7 +240,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new E (new Until(new Bool(true),inner));
+                return new E (new Until(generateTrue(),inner));
             }
             else if ("EG".equals(peek())) {
                 consume(); // consume 'EX'
@@ -253,7 +253,7 @@ public class CTLParser {
                     throw new IllegalArgumentException("Expected ')' but found: " + peek());
                 }
                 consume(); // consume ')'
-                return new EG(inner);
+                return new  Not(new Always(new Until(generateTrue(),new Not(inner))));
             }
 
             else if (peek().equals("E")) {
@@ -309,7 +309,13 @@ public class CTLParser {
             return new Until(firstPart, secondPart);
         }
 
+        public  Or generateTrue(){
+            return new Or(new Atomic("1"),new Not(new Atomic("1")));
+        }
+
     }
+
+
 
 
 }

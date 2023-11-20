@@ -1,1 +1,1 @@
-A X ( P = > ( Q v P ) )
+A X (A F (not ( P v Q ) ) )
