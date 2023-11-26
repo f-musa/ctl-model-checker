@@ -11,11 +11,9 @@ import dot.*;
 public class CTLChecker {
 
     public static void main(String[] args) {
-        String dotFile = "example.dot";
-        String ctlFile = "ctlexample.txt";
-
-        // String dotFile = args[0];
-        // String ctlFile = args[1];
+      
+        String dotFile = args[0];
+        String ctlFile = args[1];
 
         DotParser dotParser = new DotParser();
 
@@ -48,12 +46,11 @@ public class CTLChecker {
             if (formula instanceof Atomic) {
                 if (!state.getMarkings().containsKey(formula)) {
                     if (state.getLabels().contains(((Atomic) formula).getName())) {
-                        state.setMarkage(formula, true);
-                        if (((Atomic) formula).getIsVerified() != true)
-                            ((Atomic) formula).setIsVerified(true);
+                        state.setMarkage(formula, true);                            
                     } else
                         state.setMarkage(formula, false);
                 }
+                ((Atomic) formula).setIsVerified(automata.getRoot().getMarkage(formula));
             }
 
         }
@@ -73,8 +70,7 @@ public class CTLChecker {
                 Boolean value = state.getMarkage(innerFormula);
                 state.setMarkage(formula, !value);
             });
-            // ISVERIFIED TO HANDLE
-            ((Not) formula).setIsVerified(!innerFormula.getIsVerified());
+            ((Not) formula).setIsVerified(automata.getRoot().getMarkage(formula));
         }
 
         else if (formula instanceof And) {
@@ -88,7 +84,7 @@ public class CTLChecker {
                 Boolean rightValue = state.getMarkage(rightFormula);
                 state.setMarkage(formula, leftValue && rightValue);
             }
-            ((And) formula).setIsVerified(leftFormula.getIsVerified() && rightFormula.getIsVerified());
+                ((And) formula).setIsVerified(automata.getRoot().getMarkage(formula));
 
         } else if (formula instanceof Or) {
             Formula leftFormula = ((Or) formula).getLeft();
@@ -100,7 +96,7 @@ public class CTLChecker {
                 Boolean rightValue = state.getMarkage(rightFormula);
                 state.setMarkage(formula, leftValue || rightValue);
             }
-            ((Or) formula).setIsVerified(leftFormula.getIsVerified() || rightFormula.getIsVerified());
+                ((Or) formula).setIsVerified(automata.getRoot().getMarkage(formula));
         } else if (formula instanceof EX) {
             ((EX) formula).setIsVerified(false);
             Formula innerFormula = ((EX) formula).getFormula();
@@ -108,11 +104,14 @@ public class CTLChecker {
             automata.getStates().forEach(state -> {
                 state.setMarkage(formula, false);
             });
-            List<State> rootSuccessors = automata.getSuccessors(automata.getRoot());
-            rootSuccessors.forEach(state -> {
-                if (state.getMarkage(innerFormula) == true)
-                    ((EX) formula).setIsVerified(true);
+           
+            automata.getTransitions().forEach(transition ->{
+                if(transition.getTo().getMarkage(innerFormula)==true)
+                    transition.getFrom().setMarkage(formula, true);
             });
+
+            ((EX) formula).setIsVerified(automata.getRoot().getMarkage(formula));
+
         } else if (formula instanceof E) {
             Formula innerFormula = ((E) formula).getFormula();
             Formula leftFormula = ((Until) innerFormula).getLeft();
@@ -154,7 +153,7 @@ public class CTLChecker {
 
                 });
             }
-            ((E) formula).setIsVerified(checkEU(leftFormula, rightFormula, formula, automata));
+            ((E) formula).setIsVerified(automata.getRoot().getMarkage(formula));
 
         } else if (formula instanceof Always) {
             Formula innerFormula = ((Always) formula).getFormula();
@@ -208,132 +207,9 @@ public class CTLChecker {
                     }
                 });
             }
-            // VERIFICATION
-            ((Always) formula).setIsVerified(checkAU(leftFormula, rightFormula, formula, automata));
+            ((Always) formula).setIsVerified(automata.getRoot().getMarkage(formula));
 
         }
     }
-
-    public static Boolean checkAU(Formula leftFormula, Formula rightFormula, Formula formula, Automata automata) {
-        List<Path> AllPaths = automata.getAllPathFromRoot();
-        List<Boolean> PathsVerification = new ArrayList<>();
-
-        for (Path p : AllPaths) {
-            ArrayList<State> path = new ArrayList<>(p.getPath());
-            // if the path is empty the main formula is false for this path
-            if (path.isEmpty())
-                PathsVerification.add(false);
-            // if the right formula is verified on the root node, the formula is true
-            else if(path.get(0).getMarkage(rightFormula)==true){
-                PathsVerification.add(true);
-            }
-            // else we will check the whole path
-            else {
-                Boolean leftFormulaWasVerified = false;
-                State current;
-
-                while (!path.isEmpty()) {
-                    current = path.remove(0);
-                    // if the node satisfies the left formula but the not right formula we take a
-                    // step to check for the "until"
-                    if (current.getMarkage(leftFormula) == true && current.getMarkage(rightFormula) == false) {
-                        leftFormulaWasVerified = true;
-                    }
-                    // if both the left and the right formulas are false, the main formula is false
-                    // for this path
-                    else if (current.getMarkage(leftFormula) == false && current.getMarkage(rightFormula) == false) {
-                        PathsVerification.add(false);
-                        break;
-                    }
-                    // if the right formula is verified (considering the left formula was verified
-                    // for all preceding states), then the main formula is verified
-                    else if ((current.getMarkage(rightFormula) == true && leftFormulaWasVerified)
-                            || (current.getMarkage(rightFormula) == true && current.getMarkage(leftFormula) == true)) {
-                        PathsVerification.add(true);
-                        break;
-                    }
-                    /*
-                     * if the right formula is verified but the left formula was not verified on the
-                     * precedent state (or the root node verifies the right formula
-                     * but not the right formula), the main formula is not verified for this path
-                     */
-                    else if (current.getMarkage(rightFormula) == true && !leftFormulaWasVerified) {
-                        PathsVerification.add(false);
-                        break;
-                    }
-                    // if this is the end of the path
-                    if (p.getLast().equals(current))
-                        PathsVerification.add(false);
-                }
-            }
-
-        }
-        // the main formula is true only if all path satisfies it
-        if (PathsVerification.contains(false))
-            return false;
-        else
-            return true;
-    }
-
-    public static Boolean checkEU(Formula leftFormula, Formula rightFormula, Formula formula, Automata automata) {
-        List<Path> AllPaths = automata.getAllPathFromRoot();
-        List<Boolean> PathsVerification = new ArrayList<>();
-
-        for (Path p : AllPaths) {
-            ArrayList<State> path = new ArrayList<>(p.getPath());
-            // if the path is empty the main formula is false for this path
-            if (path.isEmpty())
-                PathsVerification.add(false);
-            
-            // if the right formula is verified on the root node, the formula is true
-            else if(path.get(0).getMarkage(rightFormula)==true){
-                PathsVerification.add(true);
-            }
-            // else we will check the whole path
-            else {
-                Boolean leftFormulaWasVerified = false;
-                State current;
-
-                while (!path.isEmpty()) {
-                    current = path.remove(0);
-                    // if the node satisfies the left formula but the not right formula we take a
-                    // step to check for the "until"
-                    if (current.getMarkage(leftFormula) == true && current.getMarkage(rightFormula) == false) {
-                        leftFormulaWasVerified = true;
-                    }
-                    // if both the left and the right formulas are false, the main formula is false
-                    // for this path
-                    else if (current.getMarkage(leftFormula) == false && current.getMarkage(rightFormula) == false) {
-                        PathsVerification.add(false);
-                        break;
-                    }
-                    // if the right formula is verified (considering the left formula was verified
-                    // for all preceding states), then the main formula is verified
-                    else if ((current.getMarkage(rightFormula) == true && leftFormulaWasVerified)
-                            || (current.getMarkage(rightFormula) == true && current.getMarkage(leftFormula) == true)) {
-                        PathsVerification.add(true);
-                        break;
-                    }
-                    /*
-                     * if the right formula is verified but the left formula was not verified on the
-                     * precedent state (or the root node verifies the right formula
-                     * but not the right formula), the main formula is not verified for this path
-                     */
-                    else if (current.getMarkage(rightFormula) == true && !leftFormulaWasVerified) {
-                        PathsVerification.add(false);
-                        break;
-                    }
-                    // if this is the end of the path
-                    if (p.getLast().equals(current))
-                        PathsVerification.add(false);
-                }
-            }
-
-        }
-        // the main formula is true only if all path satisfies it
-        if (PathsVerification.contains(true))
-            return true;
-        else
-            return false;
-    }
+    
 }

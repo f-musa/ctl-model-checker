@@ -1,5 +1,5 @@
  digraph mon_systeme {
- /* Liste des n÷uds avec leurs labels séparés par des espaces */
+2 /* Liste des n÷uds avec leurs labels séparés par des espaces */
  q1 [ label =" P Q "];
  q2 [ label =" P "];
  q3 [ label =" Q "];
@@ -8,8 +8,8 @@
  /* Un seul n÷ud initial */
  q1 [ shape = box ];
 
- /* Transitions */
- q1 -> q2 -> q3 ;
- q2 -> q4 ;
- q4 -> q4 ;
+  /* Transitions */
+  q1 -> q2 -> q3 ;
+  q2 -> q4 ;
+  q4 -> q4 ;
  }
