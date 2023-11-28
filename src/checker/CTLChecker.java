@@ -12,15 +12,11 @@ import dot.*;
 public class CTLChecker {
 
     public static void main(String[] args) throws IOException {
-      
-        String dotFile = "example.dot";
-        String ctlFile = "ctlexample.txt";
-      
-        // String dotFile = args[0];
-        // String ctlFile = args[1];
+
+        String dotFile = args[0];
+        String ctlFile = args[1];
 
         DotParser dotParser = new DotParser();
-
 
         try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
             String line;
@@ -52,7 +48,7 @@ public class CTLChecker {
             if (formula instanceof Atomic) {
                 if (!state.getMarkings().containsKey(formula)) {
                     if (state.getLabels().contains(((Atomic) formula).getName())) {
-                        state.setMarkage(formula, true);                            
+                        state.setMarkage(formula, true);
                     } else
                         state.setMarkage(formula, false);
                 }
@@ -90,7 +86,7 @@ public class CTLChecker {
                 Boolean rightValue = state.getMarkage(rightFormula);
                 state.setMarkage(formula, leftValue && rightValue);
             }
-                ((And) formula).setIsVerified(automata.getRoot().getMarkage(formula));
+            ((And) formula).setIsVerified(automata.getRoot().getMarkage(formula));
 
         } else if (formula instanceof Or) {
             Formula leftFormula = ((Or) formula).getLeft();
@@ -102,7 +98,8 @@ public class CTLChecker {
                 Boolean rightValue = state.getMarkage(rightFormula);
                 state.setMarkage(formula, leftValue || rightValue);
             }
-                ((Or) formula).setIsVerified(automata.getRoot().getMarkage(formula));
+            ((Or) formula).setIsVerified(automata.getRoot().getMarkage(formula));
+
         } else if (formula instanceof EX) {
             ((EX) formula).setIsVerified(false);
             Formula innerFormula = ((EX) formula).getFormula();
@@ -110,9 +107,9 @@ public class CTLChecker {
             automata.getStates().forEach(state -> {
                 state.setMarkage(formula, false);
             });
-           
-            automata.getTransitions().forEach(transition ->{
-                if(transition.getTo().getMarkage(innerFormula)==true)
+
+            automata.getTransitions().forEach(transition -> {
+                if (transition.getTo().getMarkage(innerFormula) == true)
                     transition.getFrom().setMarkage(formula, true);
             });
 
@@ -217,5 +214,5 @@ public class CTLChecker {
 
         }
     }
-    
+
 }

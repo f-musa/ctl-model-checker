@@ -3,8 +3,7 @@ package dot;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Automata implements Cloneable{
+public class Automata implements Cloneable {
 
     List<State> states = new ArrayList<>();
     List<Transition> transitions = new ArrayList<>();
@@ -14,7 +13,7 @@ public class Automata implements Cloneable{
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-    
+
     public List<State> getStates() {
         return states;
     }
@@ -81,7 +80,8 @@ public class Automata implements Cloneable{
     }
 
     /**
-     * Function that return the direct successors of a given node (if there is a loop, it is omitted from the successors list)
+     * Function that return the direct successors of a given node (if there is a
+     * loop, it is omitted from the successors list)
      * 
      * @param s
      * @return
@@ -90,14 +90,16 @@ public class Automata implements Cloneable{
         List<State> Successors = new ArrayList<>();
         this.getTransitions().forEach(t -> {
             if (t.getFrom().equals(s)) {
-                if(!t.getTo().equals(s))
+                if (!t.getTo().equals(s))
                     Successors.add(t.getTo());
             }
         });
         return Successors;
     }
+
     /**
-     * Utilty function of getAllPathFromRoot that use a DFS traversal to get all paths
+     * Utilty function of getAllPathFromRoot that use a DFS traversal to get all
+     * paths
      * 
      * 
      * @param currentState
@@ -105,26 +107,26 @@ public class Automata implements Cloneable{
      * @param currentPath
      * @param Paths
      */
-    public void getAllPathFromRootUtility(State currentState, List<State> VisitedStates, Path currentPath, List<State> currentPathNodes,
+    public void getAllPathFromRootUtility(State currentState, List<State> VisitedStates, Path currentPath,
+            List<State> currentPathNodes,
             List<Path> Paths) {
-                VisitedStates.add(currentState);
-                currentPath.addToPath(currentState);
-                currentPathNodes.add(currentState);
+        VisitedStates.add(currentState);
+        currentPath.addToPath(currentState);
+        currentPathNodes.add(currentState);
 
-                
-                for (State succ : getSuccessors(currentState)) {
-                    if (!VisitedStates.contains(succ) && !currentPathNodes.contains(succ) ) {
-                        getAllPathFromRootUtility(succ, VisitedStates, currentPath,currentPathNodes, Paths);
-                    }
-                }
-            
-                // Check if the current state is a leaf node (no unvisited successors) 
-                if (getSuccessors(currentState).isEmpty() ) {
-                    Paths.add(new Path(currentPath));  // Add a copy of the current path
-                }
-                currentPathNodes.remove(currentState);
-                VisitedStates.remove(currentState);
-                currentPath.pop();
+        for (State succ : getSuccessors(currentState)) {
+            if (!VisitedStates.contains(succ) && !currentPathNodes.contains(succ)) {
+                getAllPathFromRootUtility(succ, VisitedStates, currentPath, currentPathNodes, Paths);
+            }
+        }
+
+        // Check if the current state is a leaf node (no unvisited successors)
+        if (getSuccessors(currentState).isEmpty()) {
+            Paths.add(new Path(currentPath)); // Add a copy of the current path
+        }
+        currentPathNodes.remove(currentState);
+        VisitedStates.remove(currentState);
+        currentPath.pop();
     }
 
     /**
@@ -135,18 +137,17 @@ public class Automata implements Cloneable{
     public List<Path> getAllPathFromRoot() {
         List<Path> Paths = new ArrayList<>();
         Path currentPath = new Path();
-        
+
         List<State> VisitedStates = new ArrayList<>();
         List<State> currentPathNodes = new ArrayList<>();
         State root = this.getRoot();
         try {
-                this.getAllPathFromRootUtility(root, VisitedStates, currentPath, currentPathNodes, Paths);
-            
+            this.getAllPathFromRootUtility(root, VisitedStates, currentPath, currentPathNodes, Paths);
+
         } catch (Exception e) {
             System.out.println(e);
         }
         return Paths;
     }
-
 
 }
