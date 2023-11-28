@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,24 +17,29 @@ public class DotParser {
     public State  parseState(String line){
         State state = new State();
 
-        //Get state name
-        Pattern statePattern = Pattern.compile("(\\w+)\\[");
+// Extract state name
+        Pattern statePattern = Pattern.compile("\\s*(\\w+)\\s*\\[");
         Matcher stateNameMatcher = statePattern.matcher(line);
-        if(stateNameMatcher.find())state.name = stateNameMatcher.group(1);
-
-        //Get the labels
-        Pattern labelsPattern = Pattern.compile("\\[label=\"(.*?)\"\\]");
-        Matcher labelsMatcher = labelsPattern.matcher(line);
-
-        if (labelsMatcher.find()) {
-
-            String labelsChain = labelsMatcher.group(1);
-            for (int i = 0; i <labelsChain.length() ; i++) {
-                 state.labels.add(labelsChain.charAt(i)+"");
-            }
-
+        if (stateNameMatcher.find()) {
+            state.name = stateNameMatcher.group(1);
         }
-        return  state;
+
+
+
+// Extract atomics from label
+        Pattern atomicsPattern = Pattern.compile("label=\"(.*?)\"");
+        Matcher atomicsMatcher = atomicsPattern.matcher(line);
+
+        if (atomicsMatcher.find()) {
+            String labelsChain = atomicsMatcher.group(1);
+            List<String>labels = Arrays.asList(labelsChain.split(" "));
+
+            for (int i = 0; i < labels.size(); i++) {
+                   state.labels.add(labels.get(i).trim());
+            }
+        }
+        return state;
+
     }
 
    public void parseTransition(String line , Automata automata) {
@@ -78,6 +84,7 @@ public class DotParser {
             State state = getState(stateName,automata);
             state.isInitial = true;
             automata.initialState = state;
+
         }
 
     }
@@ -92,14 +99,16 @@ public class DotParser {
             String line;
 
             while ((line = br.readLine()) != null) {
-               String sanitizedLine = line.replaceAll(" ", "");
+               String sanitizedLine = line;
 
                 if(sanitizedLine.contains("[label")){
                    automata.states.add(parseState(sanitizedLine));
                 }
                 else if(sanitizedLine.contains("shape")){
+                     sanitizedLine = line.replaceAll(" ", "");
                       setIntialState(sanitizedLine, automata);
                 } else if(sanitizedLine.contains("->")){
+                    sanitizedLine = line.replaceAll(" ", "");
                     parseTransition(sanitizedLine,automata);
                 }
             }

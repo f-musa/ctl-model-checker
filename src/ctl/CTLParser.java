@@ -36,16 +36,17 @@ public class CTLParser {
                 }
 
                 if (c == ' ' || c == '(' || c == ')' || c == '^' || c == 'v') {
-                    if (!token.isEmpty()) {
+                    if (!token.isEmpty() ) {
                         tokens.add(token);
                         token = "";
                     }
                     if (c != ' ') {
-
                         tokens.add(Character.toString(c));
                     }
+
                 } else {
                     token += c;
+
                     if (token.equals("EX")) {
                         tokens.add(token);
                         token = "";
@@ -90,8 +91,8 @@ public class CTLParser {
                     }
                 }
             }
-
             if (!token.isEmpty()) {
+
                 tokens.add(token);
 
             }
@@ -310,7 +311,7 @@ public class CTLParser {
         }
 
         public  Or generateTrue(){
-            return new Or(new Atomic("1"),new Not(new Atomic("1")));
+            return new Or(new Atomic("@"),new Not(new Atomic("@")));
         }
 
     }

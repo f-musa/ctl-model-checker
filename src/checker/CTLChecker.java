@@ -2,6 +2,7 @@ package checker;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 import ctl.CTLParser;
@@ -10,12 +11,13 @@ import dot.*;
 
 public class CTLChecker {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
       
         String dotFile = args[0];
         String ctlFile = args[1];
 
         DotParser dotParser = new DotParser();
+
 
         try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
             String line;
@@ -23,6 +25,7 @@ public class CTLChecker {
             while ((line = br.readLine()) != null) {
                 String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
+                System.out.println(f);
                 Automata automata = dotParser.parseDotFile(dotFile);
                 markFormula(f, automata);
                 if (f.getIsVerified().booleanValue() == true) {
