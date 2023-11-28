@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Automata {
+public class Automata implements Cloneable{
 
     List<State> states = new ArrayList<>();
     List<Transition> transitions = new ArrayList<>();
     State initialState;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    
     public List<State> getStates() {
         return states;
     }

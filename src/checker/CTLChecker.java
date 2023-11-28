@@ -13,8 +13,11 @@ public class CTLChecker {
 
     public static void main(String[] args) throws IOException {
       
-        String dotFile = args[0];
-        String ctlFile = args[1];
+        String dotFile = "example.dot";
+        String ctlFile = "ctlexample.txt";
+      
+        // String dotFile = args[0];
+        // String ctlFile = args[1];
 
         DotParser dotParser = new DotParser();
 
@@ -22,11 +25,11 @@ public class CTLChecker {
         try (BufferedReader br = new BufferedReader(new FileReader(ctlFile))) {
             String line;
             Integer i = 1;
+            Automata automaton = dotParser.parseDotFile(dotFile);
             while ((line = br.readLine()) != null) {
                 String sanitizedLine = line.replaceAll(" ", "");
                 Formula f = CTLParser.parse(sanitizedLine);
-                System.out.println(f);
-                Automata automata = dotParser.parseDotFile(dotFile);
+                Automata automata = (Automata) automaton.clone();
                 markFormula(f, automata);
                 if (f.getIsVerified().booleanValue() == true) {
 

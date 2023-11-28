@@ -27,12 +27,14 @@ public class DotParser {
 
 
 // Extract atomics from label
-        Pattern atomicsPattern = Pattern.compile("label=\"(.*?)\"");
+        Pattern atomicsPattern = Pattern.compile("=\"(.*?)\"");
         Matcher atomicsMatcher = atomicsPattern.matcher(line);
 
         if (atomicsMatcher.find()) {
             String labelsChain = atomicsMatcher.group(1);
+            labelsChain = labelsChain.trim();
             List<String>labels = Arrays.asList(labelsChain.split(" "));
+
 
             for (int i = 0; i < labels.size(); i++) {
                    state.labels.add(labels.get(i).trim());
@@ -101,7 +103,9 @@ public class DotParser {
             while ((line = br.readLine()) != null) {
                String sanitizedLine = line;
 
-                if(sanitizedLine.contains("[label")){
+                if(sanitizedLine.contains("label") && sanitizedLine.contains("[") && sanitizedLine.contains("]")
+                   && sanitizedLine.contains("=")
+                ) {
                    automata.states.add(parseState(sanitizedLine));
                 }
                 else if(sanitizedLine.contains("shape")){

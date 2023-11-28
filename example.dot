@@ -1,15 +1,31 @@
-digraph mon_systeme {
-/* Liste des n÷uds avec leurs labels séparés par des espaces */
-q1 [label =" P Q "];
-q2 [label =" P "];
-q3 [label =" Q "];
-q4 [label =""];
+// Exemple du cours (mutual exclusion)
+digraph mutex_cours {
+	/* Liste des nœuds avec leurs labels séparés par des espaces */
+	s0 [label="I1 I2"];
+	s1 [label="R1 I2"];
+	s2 [label="R2 I1"];
+	s3 [label="R1 R2"];
+	s4 [label="CS1 I2"];
+	s5 [label="CS2 I1"];
+	s6 [label="R2 CS1"];
+	s7 [label="R1 CS2"];
 
- /* Un seul n÷ud initial */
-q1 [ shape = box ];
+	/* Un seul nœud initial */
+	s0 [shape=box];
 
-/* Transitions */
-q1 -> q2 -> q3 ;
-q2 -> q4 ;
-q4 -> q4 ;
+	/* Transitions */
+    s0 -> s1;
+    s0 -> s2;
+    s1 -> s3;
+    s1 -> s4;
+    s2 -> s3;
+    s2 -> s5;
+    s3 -> s6;
+    s3 -> s7;
+    s4 -> s0;
+    s4 -> s6;
+    s5 -> s0;
+    s5 -> s7;
+    s6 -> s2;
+    s7 -> s1;
 }

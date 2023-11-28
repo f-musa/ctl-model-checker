@@ -57,3 +57,5 @@ bin/
 .DS_Store
 
 classes/
+
+ctl-model-checker.iml
