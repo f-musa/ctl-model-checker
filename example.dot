@@ -1,4 +1,4 @@
-// Exemple du cours (mutual exclusion)
+// (mutual exclusion)
 digraph mutex_cours {
 	/* Liste des nœuds avec leurs labels séparés par des espaces */
 	s0 [label="I1 I2"];
