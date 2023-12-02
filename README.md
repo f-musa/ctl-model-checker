@@ -16,7 +16,8 @@ On Windows ```javac -d classes .\src\checker\*.java .\src\ctl\*.java .\src\ctl\c
 ``` java -cp classes checker.CTLChecker example.dot ctlexample.txt``` 
 
 ## Important: Use of Parentheses After Operators E, A,U, F, G, not
-When using E,A,U, etc . 
+When using E,A,U, etc. 
+
 It is important to enclose the immediate
 expressions following these operators with parentheses.
 
